@@ -427,7 +427,7 @@ class OpenerDirector(object):
         if result:
             return result
 
-        protocol = req.get_type()
+        protocol = req.type
         result = self._call_chain(self.handle_open, protocol, protocol +
                                   '_open', req)
         if result:
@@ -760,13 +760,13 @@ class ProxyHandler(BaseHandler):
         self._proxy_bypass = proxy_bypass
 
     def proxy_open(self, req, proxy, type):
-        orig_type = req.get_type()
+        orig_type = req.type
         proxy_type, user, password, hostport = _parse_proxy(proxy)
 
         if proxy_type is None:
             proxy_type = orig_type
 
-        if req.get_host() and self._proxy_bypass(req.get_host()):
+        if req.host and self._proxy_bypass(req.host):
             return None
 
         if user and password:
@@ -954,7 +954,7 @@ class ProxyBasicAuthHandler(AbstractBasicAuthHandler, BaseHandler):
         # authority.  Assume there isn't one, since urllib2 does not (and
         # should not, RFC 3986 s. 3.2.1) support requests for URLs containing
         # userinfo.
-        authority = req.get_host()
+        authority = req.host
         return self.http_error_auth_reqed('proxy-authenticate',
                                           authority, req, headers)
 
@@ -1049,7 +1049,7 @@ class AbstractDigestAuthHandler:
             return None
 
         # XXX not implemented yet
-        if req.has_data():
+        if req.data is not None:
             entdig = self.get_entity_digest(req.get_data(), chal)
         else:
             entdig = None
@@ -1138,7 +1138,7 @@ class ProxyDigestAuthHandler(BaseHandler, AbstractDigestAuthHandler):
     handler_order = 490  # before Basic auth
 
     def http_error_407(self, req, fp, code, msg, headers):
-        host = req.get_host()
+        host = req.host
         retry = self.http_error_auth_reqed('proxy-authenticate',
                                            host, req, headers)
         self.reset_retry_count()
@@ -1157,12 +1157,12 @@ class AbstractHTTPHandler(BaseHandler):
         self._debuglevel = level
 
     def do_request_(self, request):
-        host = request.get_host()
+        host = request.host
         if not host:
             raise URLError('no host given')
 
-        if request.has_data():  # POST
-            data = request.get_data()
+        if request.data is not None:  # POST
+            data = request.data
             if not request.has_header('Content-type'):
                 request.add_unredirected_header(
                     'Content-type',
@@ -1195,7 +1195,7 @@ class AbstractHTTPHandler(BaseHandler):
             - geturl(): return the original request URL
             - code: HTTP status code
         """
-        host_port = req.get_host()
+        host_port = req.host
         if not host_port:
             raise URLError('no host given')
 
@@ -1329,7 +1329,7 @@ class HTTPCookieProcessor(BaseHandler):
 class UnknownHandler(BaseHandler):
 
     def unknown_open(self, req):
-        type = req.get_type()
+        type = req.type
         raise URLError('unknown url type: %s' % type)
 
 
@@ -1416,7 +1416,7 @@ class FileHandler(BaseHandler):
     def open_local_file(self, req):
         import email.utils as emailutils
         import mimetypes
-        host = req.get_host()
+        host = req.host
         file = req.get_selector()
         try:
             localfile = url2pathname(file)
@@ -1450,7 +1450,7 @@ class FTPHandler(BaseHandler):
     def ftp_open(self, req):
         import ftplib
         import mimetypes
-        host = req.get_host()
+        host = req.host
         if not host:
             raise URLError('ftp error: no host given')
         host, port = splitport(host)

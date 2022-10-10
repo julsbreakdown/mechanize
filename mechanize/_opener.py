@@ -170,7 +170,7 @@ class OpenerDirector(_urllib2_fork.OpenerDirector):
     def open(self, fullurl, data=None,
              timeout=_sockettimeout._GLOBAL_DEFAULT_TIMEOUT):
         req = self._request(fullurl, data, None, timeout)
-        req_scheme = req.get_type()
+        req_scheme = req.type
 
         self._maybe_reindex_handlers()
 
@@ -248,7 +248,7 @@ class OpenerDirector(_urllib2_fork.OpenerDirector):
 
         """
         req = self._request(fullurl, data, False, timeout)
-        scheme = req.get_type()
+        scheme = req.type
         fp = self.open(req)
         try:
             headers = fp.info()
