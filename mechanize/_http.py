@@ -160,8 +160,8 @@ class HTTPRobotRulesProcessor(BaseHandler):
         # robots.txt requests don't need to be allowed by robots.txt :-)
         origin_req = getattr(request, "_origin_req", None)
         if (origin_req is not None and
-                origin_req.get_selector() == "/robots.txt" and
-                origin_req.get_host() == host):
+                origin_req.selector == "/robots.txt" and
+                origin_req.host == host):
             return request
 
         if host != self._host:

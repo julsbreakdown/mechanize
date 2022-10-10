@@ -1057,7 +1057,7 @@ class AbstractDigestAuthHandler:
         A1 = "%s:%s:%s" % (user, realm, pw)
         A2 = "%s:%s" % (req.get_method(),
                         # XXX selector: what about proxies and full urls
-                        req.get_selector())
+                        req.selector)
         if qop == 'auth':
             if nonce == self.last_nonce:
                 self.nonce_count += 1
@@ -1081,7 +1081,7 @@ class AbstractDigestAuthHandler:
         # XXX should the partial digests be encoded too?
 
         base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
-               'response="%s"' % (user, realm, nonce, req.get_selector(),
+               'response="%s"' % (user, realm, nonce, req.selector,
                                   respdig)
         if opaque:
             base += ', opaque="%s"' % opaque
@@ -1239,7 +1239,7 @@ class AbstractHTTPHandler(BaseHandler):
             self.parent.finalize_request_headers(req, headers)
 
         try:
-            h.request(str(req.get_method()), str(req.get_selector()), req.data,
+            h.request(str(req.get_method()), str(req.selector), req.data,
                       headers)
             r = h.getresponse()
         except socket.error as err:  # XXX what error?
@@ -1392,7 +1392,7 @@ class FileHandler(BaseHandler):
     # Use local file or FTP depending on form of URL
 
     def file_open(self, req):
-        url = req.get_selector()
+        url = req.selector
         if url[:2] == '//' and url[2:3] != '/':
             req.type = 'ftp'
             return self.parent.open(req)
@@ -1417,7 +1417,7 @@ class FileHandler(BaseHandler):
         import email.utils as emailutils
         import mimetypes
         host = req.host
-        file = req.get_selector()
+        file = req.selector
         try:
             localfile = url2pathname(file)
         except IOError as err:
@@ -1473,7 +1473,7 @@ class FTPHandler(BaseHandler):
             host = socket.gethostbyname(host)
         except socket.error as msg:
             raise URLError(msg)
-        path, attrs = splitattr(req.get_selector())
+        path, attrs = splitattr(req.selector)
         dirs = path.split('/')
         dirs = list(map(unquote, dirs))
         dirs, file = dirs[:-1], dirs[-1]

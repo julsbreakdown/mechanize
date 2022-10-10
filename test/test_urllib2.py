@@ -1526,9 +1526,9 @@ class HandlerTests(mechanize._testcase.TestCase):
         o._maybe_reindex_handlers()
 
         req = Request("http://acme.example.com/")
-        self.assertEqual(req.get_host(), "acme.example.com")
+        self.assertEqual(req.host, "acme.example.com")
         o.open(req)
-        self.assertEqual(req.get_host(), "proxy.example.com:3128")
+        self.assertEqual(req.host, "proxy.example.com:3128")
 
         self.assertEqual([(handlers[0], "http_open")],
                          [tup[0:2] for tup in o.calls])
@@ -1539,15 +1539,15 @@ class HandlerTests(mechanize._testcase.TestCase):
         ph = mechanize.ProxyHandler(dict(http="proxy.example.com"))
         o.add_handler(ph)
         req = Request("http://www.perl.org/")
-        self.assertEqual(req.get_host(), "www.perl.org")
+        self.assertEqual(req.host, "www.perl.org")
         o.open(req)
-        self.assertEqual(req.get_host(), "proxy.example.com")
+        self.assertEqual(req.host, "proxy.example.com")
         req = Request("http://www.python.org")
-        self.assertEqual(req.get_host(), "www.python.org")
+        self.assertEqual(req.host, "www.python.org")
         o.open(req)
         if sys.version_info >= (2, 6):
             # no_proxy environment variable not supported in python 2.5
-            self.assertEqual(req.get_host(), "www.python.org")
+            self.assertEqual(req.host, "www.python.org")
 
     def test_proxy_custom_proxy_bypass(self):
         self.monkey_patch_environ("no_proxy",
@@ -1576,9 +1576,9 @@ class HandlerTests(mechanize._testcase.TestCase):
         meth_spec = [[("https_open", "return response")]]
         handlers = add_ordered_mock_handlers(o, meth_spec)
         req = Request("https://www.example.com/")
-        self.assertEqual(req.get_host(), "www.example.com")
+        self.assertEqual(req.host, "www.example.com")
         o.open(req)
-        self.assertEqual(req.get_host(), "proxy.example.com:3128")
+        self.assertEqual(req.host, "proxy.example.com:3128")
         self.assertEqual([(handlers[0], "https_open")],
                          [tup[0:2] for tup in o.calls])
 
@@ -1635,7 +1635,7 @@ class HandlerTests(mechanize._testcase.TestCase):
         req = Request("https://www.example.com/")
         req.add_header("Proxy-Authorization", "FooBar")
         req.add_header("User-Agent", "Grail")
-        self.assertEqual(req.get_host(), "www.example.com")
+        self.assertEqual(req.host, "www.example.com")
         self.assertIsNone(req._tunnel_host)
         o.open(req)
         # Verify Proxy-Authorization gets tunneled to request.
@@ -1647,7 +1647,7 @@ class HandlerTests(mechanize._testcase.TestCase):
         self.assertIn(
             ("User-Agent", "Grail"), https_handler.httpconn.req_headers)
         self.assertIsNotNone(req._tunnel_host)
-        self.assertEqual(req.get_host(), "proxy.example.com:3128")
+        self.assertEqual(req.host, "proxy.example.com:3128")
         self.assertEqual(req.get_header("Proxy-authorization"), "FooBar")
 
     def test_basic_and_digest_auth_handlers(self):
@@ -1877,7 +1877,7 @@ class RequestTests(unittest.TestCase):
     def test_selector(self):
         self.assertEqual("/~jeremy/", self.get.get_selector())
         req = Request("http://www.python.org/")
-        self.assertEqual("/", req.get_selector())
+        self.assertEqual("/", req.selector)
 
     def test_normalize_url(self):
         def t(x, expected=None):
@@ -1895,7 +1895,7 @@ class RequestTests(unittest.TestCase):
 
     def test_get_host_unquote(self):
         req = Request("http://www.%70ython.org/")
-        self.assertEqual("www.python.org", req.get_host())
+        self.assertEqual("www.python.org", req.host)
 
     def test_proxy(self):
         self.assertTrue(not self.get.has_proxy())

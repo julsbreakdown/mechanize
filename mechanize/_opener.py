@@ -253,10 +253,10 @@ class OpenerDirector(_urllib2_fork.OpenerDirector):
         try:
             headers = fp.info()
             if filename is None and scheme == 'file':
-                # XXX req.get_selector() seems broken here, return None,
+                # XXX req.selector seems broken here, return None,
                 #   pending sanity :-/
                 return None, headers
-                # return urllib.url2pathname(req.get_selector()), headers
+                # return urllib.url2pathname(req.selector), headers
             if filename:
                 tfp = open(filename, 'wb')
             else:
