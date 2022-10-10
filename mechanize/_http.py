@@ -151,7 +151,7 @@ class HTTPRobotRulesProcessor(BaseHandler):
             # robots exclusion only applies to HTTP
             return request
 
-        if request.get_selector() == "/robots.txt":
+        if request.selector == "/robots.txt":
             # /robots.txt is always OK to fetch
             return request
 

@@ -299,7 +299,7 @@ look that way.
 	  Move UserAgentBase.add_referer_header() to Browser (it was on by
 	  default, breaking UserAgent, and should never really have been
 	  there).
-	* Fix HTTP proxy support: r29110 meant that Request.get_selector()
+	* Fix HTTP proxy support: r29110 meant that request.selector
 	  didn't take into account the change to .__r_host
 	  (Thanks tgates@...).
 	* Redirected robots.txt fetch no longer results in another
@@ -403,7 +403,7 @@ look that way.
 	  after .close() .
 	* .reload() on .back() if necessary (necessary iff response was
 	  not fully .read() on first .open()ing ) * Strip fragments before
-	  retrieving URLs (fixed Request.get_selector() to strip fragment)
+	  retrieving URLs (fixed request.selector to strip fragment)
 	* Fix catching HTTPError subclasses while still preserving all
 	  their response behaviour
 	* Correct over-enthusiastic documented guarantees of

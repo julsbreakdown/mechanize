@@ -1173,7 +1173,7 @@ class AbstractHTTPHandler(BaseHandler):
 
         sel_host = host
         if request.has_proxy():
-            scheme, sel = splittype(request.get_selector())
+            scheme, sel = splittype(request.selector)
             sel_host, sel_path = splithost(sel)
 
         for name, value in self.parent.addheaders:
