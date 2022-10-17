@@ -146,7 +146,7 @@ class HTTPRobotRulesProcessor(BaseHandler):
         return self.__class__(self.rfp_class)
 
     def http_request(self, request):
-        scheme = request.get_type()
+        scheme = request.type
         if scheme not in ["http", "https"]:
             # robots exclusion only applies to HTTP
             return request

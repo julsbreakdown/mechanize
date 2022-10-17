@@ -283,7 +283,7 @@ class Request:
 
     def set_proxy(self, host, type):
         orig_host = self.get_host()
-        if self.get_type() == 'https' and not self._tunnel_host:
+        if self.type == 'https' and not self._tunnel_host:
             self._tunnel_host = orig_host
         else:
             self.type = type
