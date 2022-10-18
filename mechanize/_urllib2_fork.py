@@ -1054,10 +1054,14 @@ class AbstractDigestAuthHandler:
         else:
             entdig = None
 
+        try:
+            selector = req.get_selector()
+        except:
+            selector = req.selector
         A1 = "%s:%s:%s" % (user, realm, pw)
         A2 = "%s:%s" % (req.get_method(),
                         # XXX selector: what about proxies and full urls
-                        req.selector)
+                        selector)
         if qop == 'auth':
             if nonce == self.last_nonce:
                 self.nonce_count += 1
@@ -1079,9 +1083,12 @@ class AbstractDigestAuthHandler:
             return None
 
         # XXX should the partial digests be encoded too?
-
+        try:
+            selector = req.get_selector()
+        except:
+            selector = req.selector
         base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' \
-               'response="%s"' % (user, realm, nonce, req.selector,
+               'response="%s"' % (user, realm, nonce, selector,
                                   respdig)
         if opaque:
             base += ', opaque="%s"' % opaque
@@ -1173,7 +1180,11 @@ class AbstractHTTPHandler(BaseHandler):
 
         sel_host = host
         if request.has_proxy():
-            scheme, sel = splittype(request.selector)
+            try:
+                selector = request.get_selector()
+            except:
+                selector = request.selector
+            scheme, sel = splittype(selector)
             sel_host, sel_path = splithost(sel)
 
         for name, value in self.parent.addheaders:
@@ -1239,7 +1250,11 @@ class AbstractHTTPHandler(BaseHandler):
             self.parent.finalize_request_headers(req, headers)
 
         try:
-            h.request(str(req.get_method()), str(req.selector), req.data,
+            try:
+                selector = req.get_selector()
+            except:
+                selector = req.selector
+            h.request(str(req.get_method()), str(selector), req.data,
                       headers)
             r = h.getresponse()
         except socket.error as err:  # XXX what error?
@@ -1392,7 +1407,10 @@ class FileHandler(BaseHandler):
     # Use local file or FTP depending on form of URL
 
     def file_open(self, req):
-        url = req.selector
+        try:
+            url = req.get_selector()
+        except:
+            url = req.selector
         if url[:2] == '//' and url[2:3] != '/':
             req.type = 'ftp'
             return self.parent.open(req)
@@ -1417,7 +1435,11 @@ class FileHandler(BaseHandler):
         import email.utils as emailutils
         import mimetypes
         host = req.host
-        file = req.selector
+        try:
+            file = req.get_selector()
+        except:
+            file = req.selector
+
         try:
             localfile = url2pathname(file)
         except IOError as err:
@@ -1473,7 +1495,11 @@ class FTPHandler(BaseHandler):
             host = socket.gethostbyname(host)
         except socket.error as msg:
             raise URLError(msg)
-        path, attrs = splitattr(req.selector)
+        try:
+            selector = req.get_selector()
+        except:
+            selector = req.selector
+        path, attrs = splitattr(selector)
         dirs = path.split('/')
         dirs = list(map(unquote, dirs))
         dirs, file = dirs[:-1], dirs[-1]
