@@ -613,7 +613,7 @@ class HTTPRedirectHandler(BaseHandler):
             new = Request(
                 newurl,
                 headers=req.headers,
-                origin_req_host=req.get_origin_req_host(),
+                origin_req_host=req.origin_req_host,
                 unverifiable=True,
                 visit=False, method=m if code in (307, 308) else None,
                 timeout=req.timeout)
