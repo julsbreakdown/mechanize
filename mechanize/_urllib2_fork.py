@@ -296,7 +296,7 @@ class Request:
         # has non-HTTPS proxy
         return self.__r_host == self.__original
 
-    def get_origin_req_host(self):
+    def origin_req_host(self):
         return self.origin_req_host
 
     def is_unverifiable(self):
@@ -1053,7 +1053,6 @@ class AbstractDigestAuthHandler:
             entdig = self.get_entity_digest(req.get_data(), chal)
         else:
             entdig = None
-
         try:
             selector = req.get_selector()
         except:
